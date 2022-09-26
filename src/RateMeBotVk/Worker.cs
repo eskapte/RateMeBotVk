@@ -34,13 +34,12 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken token)
     {
-        // TODO в конце цикла надо очищать
         var needToResponse = await _vkMessageService.GetUnansweredMessagesAsync(token);
+        await ProccessChatsAsync(needToResponse, token);
 
         while (true)
         {
             var newMessages = await _vkMessageService.GetNewMessagesAsync(token);
-            newMessages = newMessages.Union(needToResponse);
 
             await ProccessChatsAsync(newMessages, token);
         }
@@ -48,21 +47,16 @@ public class Worker : BackgroundService
 
     private async Task ProccessChatsAsync(IEnumerable<Message> messages, CancellationToken token = default)
     {
-        var chats = messages.GroupBy(x => x.PeerId);
+        var lastMessages = messages.GroupBy(x => x.PeerId).Select(x => x.Last());
 
-        if (!chats.Any())
+        if (!lastMessages.Any())
             return;
 
-        foreach (var chat in chats)
+        foreach (var message in lastMessages)
         {
-            if (chat.Key == null)
-                continue;
-
-            var lastMessage = chat.Last();
-
-            if (lastMessage.FromId > 0 && lastMessage.PeerId.HasValue)
+            if (message.FromId > 0 && message.PeerId.HasValue)
             {
-                await _vkMessageService.SendMessageAsync(lastMessage.PeerId.Value, lastMessage.Text, true, token);
+                await _vkMessageService.SendMessageAsync(message.PeerId.Value, message.Text, true, token);
             }
         }
     }
