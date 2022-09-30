@@ -1,11 +1,16 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using RateMeBotVk.BotCommandExecuter.Commands;
+using RateMeBotVk.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using VkNet.Abstractions;
 using VkNet.Enums;
+using VkNet.Enums.SafetyEnums;
 using VkNet.Model;
+using VkNet.Model.Keyboard;
 using VkNet.Model.RequestParams;
 
 namespace RateMeBotVk.Services;
@@ -70,7 +75,8 @@ public class VkMessageService : IVkMessageService
         {
             PeerId = peerId,
             RandomId = GetRandomId(),
-            Message = message
+            Message = message,
+            Keyboard = KeyboardHelper.GetMain()
         };
 
         return await _vkApi.Messages.SendAsync(msgParams);

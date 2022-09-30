@@ -9,7 +9,9 @@ public class User
     [MinLength(5)]
     public string Username { get; set; }
 
+    [MaxLength(30)]
     public string FirstName { get; set; }
 
+    [MaxLength(30)]
     public string LastName { get; set; }
 }
