@@ -1,16 +1,11 @@
-﻿using Newtonsoft.Json;
-using RateMeBotVk.BotCommandExecuter.Commands;
-using RateMeBotVk.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using VkNet.Abstractions;
 using VkNet.Enums;
-using VkNet.Enums.SafetyEnums;
 using VkNet.Model;
-using VkNet.Model.Keyboard;
 using VkNet.Model.RequestParams;
 
 namespace RateMeBotVk.Services;
@@ -19,7 +14,7 @@ public interface IVkMessageService
 {
     public Task<IEnumerable<Message>> GetUnansweredMessagesAsync(CancellationToken token = default);
     public Task<IEnumerable<Message>> GetNewMessagesAsync(CancellationToken token = default);
-    public Task<long> SendMessageAsync(long peerId, string message, bool needToRead = true, CancellationToken token = default);
+    public Task<long> SendMessageAsync(MessagesSendParams options, bool needToRead = true, CancellationToken token = default);
 }
 
 public class VkMessageService : IVkMessageService
@@ -56,30 +51,30 @@ public class VkMessageService : IVkMessageService
     }
 
     public async Task<long> SendMessageAsync(
-        long peerId, 
-        string message, 
+        MessagesSendParams options,
         bool needToRead = true, 
         CancellationToken token = default)
     {
-        if (needToRead)
+        token.ThrowIfCancellationRequested();
+
+        if (options is null || options.PeerId.HasValue == false)
         {
-            var isReaded = await _vkApi.Messages.MarkAsReadAsync(peerId.ToString());
-            if (!isReaded)
-                throw new Exception($"Failed to read message from peerId {peerId}.");
+            throw new ArgumentNullException(nameof(options));
         }
 
-        if (string.IsNullOrEmpty(message))
+        if (needToRead)
+        {
+            var isReaded = await _vkApi.Messages.MarkAsReadAsync(options.PeerId.ToString());
+            if (!isReaded)
+                throw new Exception($"Failed to read message from peerId {options.PeerId}.");
+        }
+
+        if (string.IsNullOrEmpty(options.Message))
             return 0;
 
-        var msgParams = new MessagesSendParams
-        {
-            PeerId = peerId,
-            RandomId = GetRandomId(),
-            Message = message,
-            Keyboard = KeyboardHelper.GetMain()
-        };
+        options.RandomId = GetRandomId();
 
-        return await _vkApi.Messages.SendAsync(msgParams);
+        return await _vkApi.Messages.SendAsync(options);
     }
 
     private int GetRandomId() => DateTime.Now.GetHashCode();

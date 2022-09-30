@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using RateMeBotVk.BotCommandExecuter;
 using RateMeBotVk.Services;
 using System.Threading.Tasks;
 using VkNet;
@@ -33,6 +34,7 @@ internal class Program
 
                     return vk;
                 });
+                services.AddTransient<ICommandExecuter, CommandExecuter>();
                 services.AddHostedService<Worker>();
                 services.Configure<AppSettings>(hostContext.Configuration.GetSection(nameof(AppSettings)));
             });

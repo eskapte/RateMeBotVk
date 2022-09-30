@@ -1,13 +1,13 @@
 ﻿using Newtonsoft.Json;
-using RateMeBotVk.BotCommandExecuter.Commands;
+using RateMeBotVk.BotCommandExecuter;
 using VkNet.Enums.SafetyEnums;
 using VkNet.Model.Keyboard;
 
 namespace RateMeBotVk.Helpers;
 public static class KeyboardHelper
 {
-    private static KeyboardBuilder _builder = new KeyboardBuilder();
     private static MessageKeyboard _mainKeyboard;
+    private static MessageKeyboard _settingKeyboard;
 
     public static MessageKeyboard GetMain()
     {
@@ -17,12 +17,29 @@ public static class KeyboardHelper
         var settingsBtn = CreateButtonOptions("Настройки", new Command(CommandType.Settings));
         var aboutMeBtn = CreateButtonOptions("Обо мне", new Command(CommandType.AboutMe));
 
-        _mainKeyboard = _builder
+        _mainKeyboard = new KeyboardBuilder()
             .AddButton(settingsBtn, KeyboardButtonColor.Default)
             .AddButton(aboutMeBtn, KeyboardButtonColor.Positive)
             .Build();
 
         return _mainKeyboard;
+    }
+
+    public static MessageKeyboard GetSettings()
+    {
+        if (_settingKeyboard is not null)
+            return _settingKeyboard;
+
+        var unsubscribeBtn = CreateButtonOptions("Отписаться", new Command(CommandType.UnsubcribeOnUpdates));
+        var backBtn = CreateButtonOptions("Назад", new Command(CommandType.Back));
+
+        _settingKeyboard = new KeyboardBuilder()
+            .AddButton(unsubscribeBtn, KeyboardButtonColor.Negative)
+            .AddLine()
+            .AddButton(backBtn, KeyboardButtonColor.Default)
+            .Build();
+
+        return _settingKeyboard;
     }
 
     private static MessageKeyboardButtonAction CreateButtonOptions(string text, Command command)

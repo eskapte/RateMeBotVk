@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using RateMeBotVk.Services;
 using Microsoft.Extensions.Options;
+using RateMeBotVk.BotCommandExecuter;
 
 namespace RateMeBotVk;
 
@@ -17,19 +18,22 @@ public class Worker : BackgroundService
     private readonly ILogger<Worker> _logger;
     private readonly AppSettings _setting;
     private readonly IVkMessageService _vkMessageService;
+    private readonly ICommandExecuter _commandExecuter;
 
     private readonly TimeSpan _onErrorDelay;
 
     public Worker(
         IOptions<AppSettings> settings,
         ILogger<Worker> logger,
-        IVkMessageService vkMessageService)
+        IVkMessageService vkMessageService,
+        ICommandExecuter commandExecuter)
     {
         _setting = settings.Value;
         _logger = logger;
 
         _onErrorDelay = TimeSpan.FromSeconds(_setting.OnErrorDelay);
         _vkMessageService = vkMessageService;
+        _commandExecuter = commandExecuter;
     }
 
     protected override async Task ExecuteAsync(CancellationToken token)
@@ -54,10 +58,7 @@ public class Worker : BackgroundService
 
         foreach (var message in lastMessages)
         {
-            if (message.FromId > 0 && message.PeerId.HasValue)
-            {
-                await _vkMessageService.SendMessageAsync(message.PeerId.Value, message.Text, true, token);
-            }
+            await _commandExecuter.ExecuteAsync(message, token);
         }
     }
 }

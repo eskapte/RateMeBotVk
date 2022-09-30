@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Converters;
 using System;
 
-namespace RateMeBotVk.BotCommandExecuter.Commands;
+namespace RateMeBotVk.BotCommandExecuter;
 
 [Serializable]
 public class Command

@@ -1,12 +1,20 @@
-﻿namespace RateMeBotVk
+﻿namespace RateMeBotVk.Helpers
 {
     public static class ResponseTemplates
     {
+
+        public static string AboutSettings(bool isSubcribed) =>
+                                            "Описание команд:\n" +
+                                            "\n" +
+                                            (isSubcribed
+                                                ? "Отписаться - не получать уведомления от бота\n"
+                                                : "Подписаться - получать уведомления от бота\n");
+
         public const string StartMessage = "Добро пожаловать!\n" +
                                            "Этот бот позволяет оставлять и просматривать отзывы о пользователях Вконтакте\n" +
                                            "Это может быть очень полезно при знакомстве через интернет, так Вы будете " +
                                            "лучше понимать, с каким человеком общаетесь\n" +
-                                           "Оставлять можно как хорошие, так и плохие отзывы\n" + 
+                                           "Оставлять можно как хорошие, так и плохие отзывы\n" +
                                            "Чтобы просмотреть или оставить отзывы о ком-то, просто напишите мне username пользователя " +
                                            "или его ссылку на вк\n" +
                                            "Вы также будете получать уведомления от меня, если кто-то оставит о Вас отзыв. " +
@@ -18,8 +26,8 @@
                                                             "о пожеланиях и рекомендациях";
 
         public static string AboutMe(
-            string name, 
-            float rating = 0f, 
+            string name,
+            float rating = 0f,
             int ratesCount = 0) => $"{name}, информация о Вашем профиле\n" +
                                                 $"Рейтинг: {rating}\n" +
                                                 $"Кол-во отзывов: {ratesCount}";
@@ -29,7 +37,7 @@
             string profileUrl,
             float rating = 0f,
             int ratesCount = 0) => $"Информация о профиле {name}\n" +
-                                                $"{profileUrl}\n" + 
+                                                $"{profileUrl}\n" +
                                                 $"Рейтинг: {rating}\n" +
                                                 $"Кол-во отзывов: {ratesCount}";
 
