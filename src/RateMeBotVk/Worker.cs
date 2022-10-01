@@ -41,6 +41,7 @@ public class Worker : BackgroundService
         var needToResponse = await _vkMessageService.GetUnansweredMessagesAsync(token);
         await ProcessChatsAsync(needToResponse, token);
 
+        // TODO Make error catching, maybe with attribute
         while (true)
         {
             token.ThrowIfCancellationRequested();
@@ -61,7 +62,7 @@ public class Worker : BackgroundService
         // 20 chats in one time
         foreach (var chats in lastMessages.Chunk(_setting.ProcessChatsPerSecond))
         {
-            await Parallel.ForEachAsync(chats, async (message, token) =>
+            await Parallel.ForEachAsync(chats, token, async (message, token) =>
             {
                 await _commandExecuter.ExecuteAsync(message, token);
             });

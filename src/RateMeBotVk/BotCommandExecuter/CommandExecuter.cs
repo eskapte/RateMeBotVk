@@ -1,10 +1,12 @@
 ﻿using Newtonsoft.Json;
 using RateMeBotVk.Helpers;
 using RateMeBotVk.Services;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using VkNet.Model;
 using VkNet.Model.RequestParams;
+using VkNet.Utils;
 
 namespace RateMeBotVk.BotCommandExecuter;
 
@@ -26,10 +28,22 @@ public class CommandExecuter : ICommandExecuter
     public async Task ExecuteAsync(Message message, CancellationToken token = default)
     {
         token.ThrowIfCancellationRequested();
-        var command = JsonConvert.DeserializeObject<Command>(message.Payload);
+
+        Command command;
+        if (string.IsNullOrEmpty(message.Payload))
+        {
+            command = new Command(CommandType.Search);
+        }
+        else
+        {
+            command = JsonConvert.DeserializeObject<Command>(message.Payload);
+        }
 
         switch (command.CommandType)
         {
+            case CommandType.Search:
+                await ProcessSearchCommand(message, token);
+                break;
             case CommandType.Settings:
                 await ProcessSettingsCommandAsync(message, token);
                 break;
@@ -44,41 +58,33 @@ public class CommandExecuter : ICommandExecuter
 
     #region CommandsProcessors
 
+    private async Task ProcessSearchCommand(Message message, CancellationToken token)
+    {
+        await ProcessUnknowCommandAsync(message, token);
+    }
+
     private async Task ProcessSettingsCommandAsync(Message message, CancellationToken token = default)
     {
-        var responseText = ResponseTemplates.AboutSettings(true);
-        var msgOptions = new MessagesSendParams
-        {
-            PeerId = message.PeerId.Value,
-            Message = responseText,
-            Keyboard = KeyboardHelper.GetSettings()
-        };
+        var response = ResponseHelper.Settings(true);
+        response.PeerId = message.PeerId.Value;
 
-        await _vkMessageService.SendMessageAsync(msgOptions, token: token);
+        await _vkMessageService.SendMessageAsync(response, token: token);
     }
 
     private async Task ProcessBackCommandAsync(Message message, CancellationToken token = default)
     {
-        var responseText = ResponseTemplates.Back;
-        var msgOptions = new MessagesSendParams
-        {
-            PeerId = message.PeerId.Value,
-            Message = responseText,
-            Keyboard = KeyboardHelper.GetMain()
-        };
+        var response = ResponseHelper.Back;
+        response.PeerId = message.PeerId.Value;
 
-        await _vkMessageService.SendMessageAsync(msgOptions, token: token);
+        await _vkMessageService.SendMessageAsync(response, token: token);
     }
 
     private async Task ProcessUnknowCommandAsync(Message message, CancellationToken token = default)
     {
-        var msgOptions = new MessagesSendParams
-        {
-            PeerId = message.PeerId.Value,
-            Message = ResponseTemplates.CommandNotFound,
-        };
+        var response = ResponseHelper.CommandNotFount;
+        response.PeerId = message.PeerId.Value;
 
-        await _vkMessageService.SendMessageAsync(msgOptions, token: token);
+        await _vkMessageService.SendMessageAsync(response, token: token);
     }
 
     #endregion CommandsProcessors

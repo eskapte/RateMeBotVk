@@ -2,10 +2,11 @@
 
 public enum CommandType : byte
 {
-    Settings = 1,
+    Search = 1,
+    Start,
+    Settings,
     AboutMe,
     Back,
     SubcribeOnUpdates,
     UnsubcribeOnUpdates,
-    Search
 }
