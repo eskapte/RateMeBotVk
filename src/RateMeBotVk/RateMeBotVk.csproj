@@ -23,4 +23,8 @@
     <PackageReference Include="VkNet.FluentCommands.GroupBot" Version="2.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\RateMeBotVk.DataAccess\RateMeBotVk.DataAccess.csproj" />
+  </ItemGroup>
+
 </Project>

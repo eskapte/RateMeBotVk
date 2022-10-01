@@ -1,6 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RateMeBotVk.BotCommandExecuter;
+using RateMeBotVk.DataAccess;
 using RateMeBotVk.Services;
 using System.Threading.Tasks;
 using VkNet;
@@ -34,8 +37,16 @@ internal class Program
 
                     return vk;
                 });
+                services.AddScoped<IVkSearchInfoService, VkSearchInfoService>();
                 services.AddTransient<ICommandExecuter, CommandExecuter>();
                 services.AddHostedService<Worker>();
                 services.Configure<AppSettings>(hostContext.Configuration.GetSection(nameof(AppSettings)));
+                services.AddDbContext<Db>(options =>
+                {
+                    options.UseSqlServer(hostContext.Configuration.GetConnectionString("VkBotDatabase"), builder =>
+                    {
+                        builder.CommandTimeout(60);
+                    });
+                });
             });
 }
