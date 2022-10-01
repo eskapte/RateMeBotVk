@@ -39,26 +39,32 @@ public class Worker : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken token)
     {
         var needToResponse = await _vkMessageService.GetUnansweredMessagesAsync(token);
-        await ProccessChatsAsync(needToResponse, token);
+        await ProcessChatsAsync(needToResponse, token);
 
         while (true)
         {
-            var newMessages = await _vkMessageService.GetNewMessagesAsync(token);
+            token.ThrowIfCancellationRequested();
 
-            await ProccessChatsAsync(newMessages, token);
+            var newMessages = await _vkMessageService.GetNewMessagesAsync(token);
+            await ProcessChatsAsync(newMessages, token);
         }
     }
 
-    private async Task ProccessChatsAsync(IEnumerable<Message> messages, CancellationToken token = default)
+    private async Task ProcessChatsAsync(IEnumerable<Message> messages, CancellationToken token = default)
     {
         var lastMessages = messages.GroupBy(x => x.PeerId).Select(x => x.Last());
 
         if (!lastMessages.Any())
             return;
 
-        foreach (var message in lastMessages)
+        // Because vk api can get maximum 20 queries per second, we can to parallel processing
+        // 20 chats in one time
+        foreach (var chats in lastMessages.Chunk(_setting.ProcessChatsPerSecond))
         {
-            await _commandExecuter.ExecuteAsync(message, token);
+            await Parallel.ForEachAsync(chats, async (message, token) =>
+            {
+                await _commandExecuter.ExecuteAsync(message, token);
+            });
         }
     }
 }

@@ -1,13 +1,10 @@
 ﻿using Newtonsoft.Json;
 using RateMeBotVk.Helpers;
 using RateMeBotVk.Services;
-using System;
-using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using VkNet.Model;
 using VkNet.Model.RequestParams;
-using VkNet.Utils;
 
 namespace RateMeBotVk.BotCommandExecuter;
 
@@ -28,6 +25,7 @@ public class CommandExecuter : ICommandExecuter
 
     public async Task ExecuteAsync(Message message, CancellationToken token = default)
     {
+        token.ThrowIfCancellationRequested();
         var command = JsonConvert.DeserializeObject<Command>(message.Payload);
 
         switch (command.CommandType)
@@ -61,7 +59,7 @@ public class CommandExecuter : ICommandExecuter
 
     private async Task ProcessBackCommandAsync(Message message, CancellationToken token = default)
     {
-        var responseText = "Назад";
+        var responseText = ResponseTemplates.Back;
         var msgOptions = new MessagesSendParams
         {
             PeerId = message.PeerId.Value,
