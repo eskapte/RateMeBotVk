@@ -8,7 +8,7 @@ public class Db : DbContext
 {
     public Db(DbContextOptions<Db> options) : base(options)
     {
-        Database.EnsureCreated();
+        //Database.EnsureCreated();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

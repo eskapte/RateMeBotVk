@@ -1,4 +1,5 @@
-﻿using VkNet.Model.RequestParams;
+﻿using RateMeBotVk.Extensions;
+using VkNet.Model.RequestParams;
 
 namespace RateMeBotVk.Helpers;
 
@@ -18,9 +19,9 @@ public static class ResponseHelper
         Keyboard = KeyboardHelper.GetMain()
     };
 
-    public static MessagesSendParams Subscribe(string name) => new()
+    public static MessagesSendParams Subscribe() => new()
     {
-        Message =  $"{name}, подпишитесь на нашу [https://vk.com/rate_me_bot|группу]. " +
+        Message =  $"Подпишитесь на нашу [https://vk.com/rate_me_bot|группу]. " +
                     "В ней мы выкладываем " +
                     "все свежие новости о боте, а также в обсуждениях Вы сможете написать " +
                     "о пожеланиях и рекомендациях",
@@ -37,30 +38,42 @@ public static class ResponseHelper
         Keyboard = KeyboardHelper.GetSettings()
     };
 
-    public static MessagesSendParams AboutMe(string name, float rating = 0f, int ratesCount = 0) => new()
+    public static MessagesSendParams AboutMe(float rating = 0f, int ratesCount = 0) => new()
     {
-        Message =   $"{name}, информация о Вашем профиле\n" +
+        Message =   $"Информация о Вашем профиле\n" +
                     $"Рейтинг: {rating}\n" +
                     $"Кол-во отзывов: {ratesCount}",
         Keyboard = KeyboardHelper.GetMain()
     };
 
-    public static MessagesSendParams GetUserProfile(
-        string name, 
-        string profileUrl, 
+    public static MessagesSendParams UserProfile(
+        string fullName, 
+        string username, 
         float rating = 0f, 
         int ratesCount = 0) => new()
     {
-        Message =   $"Информация о профиле {name}\n" +
-                    $"{profileUrl}\n" +
+        Message =   $"Информация о профиле [{username}|{fullName}]\n" +
                     $"Рейтинг: {rating}\n" +
                     $"Кол-во отзывов: {ratesCount}",
-        Keyboard = KeyboardHelper.GetMain()
+        Keyboard = KeyboardHelper.GetRateKeyboard().AsInline()
+    };
+
+    public static MessagesSendParams UserWithoutRating(string fullName, string username) => new()
+    {
+        Message = $"Информация о профиле [{username}|{fullName}]\n" +
+                  $"Об этом пользователе ещё нет отзывов\n" + 
+                  $"Будьте первыми - оставьте отзыв!",
+        Keyboard = KeyboardHelper.GetRateKeyboard().AsInline()
     };
 
     public static MessagesSendParams CommandNotFount => new()
     {
         Message = "Такой команды не существует"
+    };
+
+    public static MessagesSendParams NotFoundUser => new()
+    {
+        Message = "Не удалось найти такого пользователя"
     };
 
     public static MessagesSendParams Back => new()

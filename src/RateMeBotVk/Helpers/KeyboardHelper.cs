@@ -7,7 +7,7 @@ namespace RateMeBotVk.Helpers;
 public static class KeyboardHelper
 {
     private static MessageKeyboard _mainKeyboard;
-    private static MessageKeyboard _settingKeyboard;
+    private static MessageKeyboard _rateKeyboard;
 
     public static MessageKeyboard GetMain()
     {
@@ -25,21 +25,35 @@ public static class KeyboardHelper
         return _mainKeyboard;
     }
 
+    public static MessageKeyboard GetRateKeyboard()
+    {
+        if (_rateKeyboard is not null)
+            return _rateKeyboard;
+
+        var rateBtn = CreateButtonOptions("Оценить", new Command(CommandType.Rate));
+        var showRates = CreateButtonOptions("Отзывы", new Command(CommandType.RatesWatch));
+
+        _rateKeyboard = new KeyboardBuilder()
+            .AddButton(rateBtn, KeyboardButtonColor.Primary)
+            .AddLine()
+            .AddButton(showRates, KeyboardButtonColor.Default)
+            .Build();
+
+        return _rateKeyboard;
+    }
+
     public static MessageKeyboard GetSettings()
     {
-        if (_settingKeyboard is not null)
-            return _settingKeyboard;
-
         var unsubscribeBtn = CreateButtonOptions("Отписаться", new Command(CommandType.UnsubcribeOnUpdates));
         var backBtn = CreateButtonOptions("Назад", new Command(CommandType.Back));
 
-        _settingKeyboard = new KeyboardBuilder()
+        var settingKeyboard = new KeyboardBuilder()
             .AddButton(unsubscribeBtn, KeyboardButtonColor.Negative)
             .AddLine()
             .AddButton(backBtn, KeyboardButtonColor.Default)
             .Build();
 
-        return _settingKeyboard;
+        return settingKeyboard;
     }
 
     private static MessageKeyboardButtonAction CreateButtonOptions(string text, Command command)

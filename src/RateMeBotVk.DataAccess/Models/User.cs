@@ -6,16 +6,10 @@ namespace RateMeBotVk.DataAccess.Models;
 
 public class User
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
 
     [StringLength(32, MinimumLength = 5)]
     public string Username { get; set; }
-
-    [StringLength(30)]
-    public string FirstName { get; set; }
-
-    [StringLength(30)]
-    public string LastName { get; set; }
 
     public DateTime Created { get; set; }
     public DateTime Updated { get; set; }

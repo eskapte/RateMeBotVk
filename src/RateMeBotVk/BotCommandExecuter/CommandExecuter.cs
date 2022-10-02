@@ -1,12 +1,12 @@
 ﻿using Newtonsoft.Json;
+using RateMeBotVk.Extensions;
 using RateMeBotVk.Helpers;
+using RateMeBotVk.Models.Users;
 using RateMeBotVk.Services;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using VkNet.Model;
 using VkNet.Model.RequestParams;
-using VkNet.Utils;
 
 namespace RateMeBotVk.BotCommandExecuter;
 
@@ -19,10 +19,12 @@ public interface ICommandExecuter
 public class CommandExecuter : ICommandExecuter
 {
     private readonly IVkMessageService _vkMessageService;
+    private readonly IVkSearchInfoService _vkSearchInfoService;
 
-    public CommandExecuter(IVkMessageService vkMessageService)
+    public CommandExecuter(IVkMessageService vkMessageService, IVkSearchInfoService vkSearchInfoService)
     {
         _vkMessageService = vkMessageService;
+        _vkSearchInfoService = vkSearchInfoService;
     }
 
     public async Task ExecuteAsync(Message message, CancellationToken token = default)
@@ -60,29 +62,39 @@ public class CommandExecuter : ICommandExecuter
 
     private async Task ProcessSearchCommand(Message message, CancellationToken token)
     {
-        await ProcessUnknowCommandAsync(message, token);
+        var user = await _vkSearchInfoService.SearchUserByUsernameAsync(message.Text, token);
+
+        MessagesSendParams response;
+        if (user is UserWithoutRating userWithoutRating)
+        {
+            response = ResponseHelper.UserWithoutRating(userWithoutRating.FullName, userWithoutRating.Username)
+                .ToPeer(message.PeerId.Value);
+        }
+        else
+        {
+            response = ResponseHelper.NotFoundUser.ToPeer(message.PeerId.Value);
+        }
+
+        await _vkMessageService.SendMessageAsync(response, token: token);
     }
 
     private async Task ProcessSettingsCommandAsync(Message message, CancellationToken token = default)
     {
-        var response = ResponseHelper.Settings(true);
-        response.PeerId = message.PeerId.Value;
+        var response = ResponseHelper.Settings(true).ToPeer(message.PeerId.Value);
 
         await _vkMessageService.SendMessageAsync(response, token: token);
     }
 
     private async Task ProcessBackCommandAsync(Message message, CancellationToken token = default)
     {
-        var response = ResponseHelper.Back;
-        response.PeerId = message.PeerId.Value;
+        var response = ResponseHelper.Back.ToPeer(message.PeerId.Value);
 
         await _vkMessageService.SendMessageAsync(response, token: token);
     }
 
     private async Task ProcessUnknowCommandAsync(Message message, CancellationToken token = default)
     {
-        var response = ResponseHelper.CommandNotFount;
-        response.PeerId = message.PeerId.Value;
+        var response = ResponseHelper.CommandNotFount.ToPeer(message.PeerId.Value);
 
         await _vkMessageService.SendMessageAsync(response, token: token);
     }
