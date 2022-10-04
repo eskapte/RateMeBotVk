@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RateMeBotVk.DataAccess.Models;
 public class Rate
@@ -11,14 +10,10 @@ public class Rate
     public float RateValue { get; set; }
 
     public long RatedUserId { get; set; }
-
-    [ForeignKey(nameof(RatedUserId))]
-    public User RatedUser { get; set; }
+    public User? RatedUser { get; set; }
 
     public long RatingUserId { get; set; }
-
-    [ForeignKey(nameof(RatedUserId))]
-    public User RatingUser { get; set; }
+    public User? RatingUser { get; set; }
 
     public DateTime Date { get; set; }
 }

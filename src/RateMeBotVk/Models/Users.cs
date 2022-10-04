@@ -1,32 +1,32 @@
-﻿using System;
+﻿namespace RateMeBotVk.Models.Users;
 
-namespace RateMeBotVk.Models.Users;
-
-public abstract record AbstractUser(string Username);
-
-public record UserWithRating : AbstractUser
+public abstract class AbstractUser
 {
-    public long Id { get; init; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string PhotoUrl { get; set; }
+    public string Username { get; set; }
 
-    public UserWithRating(string username, long id) : base(username)
+    public AbstractUser(string username)
     {
-        Id = id;
+        Username = username;
     }
 }
 
-public record UserWithoutRating : AbstractUser
+public class UserWithRating : AbstractUser
 {
-    public long Id { get; init; }
-    public Uri PhotoUrl { get; set; }
+    public string FullName { get; set; } 
+    public float Rating { get; set; }
+    public int RatesCount { get; set; }
+
+    public UserWithRating(string username) : base(username) { }
+}
+
+public class UserWithoutRating : AbstractUser
+{
     public string FullName { get; set; }
 
-    public UserWithoutRating(string username) : base(username)
-    {
-
-    }
+    public UserWithoutRating(string username) : base(username) { }
 }
 
-public record NotFoundUser(string Username) : AbstractUser(Username);
+public class NotFoundUser : AbstractUser
+{
+    public NotFoundUser(string username) : base(username) { }
+}

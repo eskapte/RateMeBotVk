@@ -3,6 +3,8 @@ using RateMeBotVk.Extensions;
 using RateMeBotVk.Helpers;
 using RateMeBotVk.Models.Users;
 using RateMeBotVk.Services;
+using System;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using VkNet.Model;
@@ -62,18 +64,18 @@ public class CommandExecuter : ICommandExecuter
 
     private async Task ProcessSearchCommand(Message message, CancellationToken token)
     {
-        var user = await _vkSearchInfoService.SearchUserByUsernameAsync(message.Text, token);
+        var username = GetUsernameFromUrl(message.Text);
+        var userData = await _vkSearchInfoService.SearchUserByUsernameAsync(username, token);
 
-        MessagesSendParams response;
-        if (user is UserWithoutRating userWithoutRating)
+        var response = userData switch
         {
-            response = ResponseHelper.UserWithoutRating(userWithoutRating.FullName, userWithoutRating.Username)
-                .ToPeer(message.PeerId.Value);
-        }
-        else
-        {
-            response = ResponseHelper.NotFoundUser.ToPeer(message.PeerId.Value);
-        }
+            UserWithoutRating user => ResponseHelper.UserWithoutRating(user.FullName, user.Username)
+                .ToPeer(message.PeerId.Value),
+            UserWithRating user => ResponseHelper.UserProfile(user.FullName, user.Username, user.Rating, user.RatesCount)
+                .ToPeer(message.PeerId.Value),
+            NotFoundUser _ => ResponseHelper.NotFoundUser,
+            _ => throw new NotImplementedException("Undefines User type")
+        };
 
         await _vkMessageService.SendMessageAsync(response, token: token);
     }
@@ -104,5 +106,14 @@ public class CommandExecuter : ICommandExecuter
     public void Execute(Message message)
     {
         ExecuteAsync(message).RunSynchronously();
+    }
+
+    private string GetUsernameFromUrl(string message)
+    {
+        var pattern = @"vk\.com\/(?<username>[\w-]{5,32})$";
+        var regex = new Regex(pattern);
+        var match = regex.Match(message);
+
+        return match.Success ? match.Result("${username}") : message;
     }
 }

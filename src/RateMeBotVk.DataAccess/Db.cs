@@ -8,30 +8,36 @@ public class Db : DbContext
 {
     public Db(DbContextOptions<Db> options) : base(options)
     {
-        //Database.EnsureCreated();
+        Database.EnsureCreated();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        #region User
-        modelBuilder.Entity<User>()
-            .HasIndex(x => x.Username)
-            .IsUnique();
-        modelBuilder.Entity<User>()
-            .Property(x => x.Created)
-            .HasDefaultValueSql("getdate()");
-        modelBuilder.Entity<User>()
-            .Property(x => x.Updated)
-            .ValueGeneratedOnUpdate();
-        #endregion
-
-        #region Rate
-        modelBuilder.Entity<Rate>()
-            .Property(x => x.Date)
-            .HasDefaultValueSql("getdate()");
-        #endregion 
+        modelBuilder.Entity<User>(user =>
+        {
+            user.HasIndex(x => x.Username)
+                .IsUnique();
+            user.Property(x => x.Created)
+                .HasDefaultValueSql("getdate()");
+            user.Property(x => x.Updated)
+                .ValueGeneratedOnUpdate();
+        });
+            
+        modelBuilder.Entity<Rate>(rate =>
+        {
+            rate.Property(x => x.Date)
+                .HasDefaultValueSql("getdate()");
+            rate.HasOne(x => x.RatedUser)
+                .WithMany(x => x.GotRates)
+                .HasForeignKey(x => x.RatedUserId)
+                .OnDelete(DeleteBehavior.NoAction);
+            rate.HasOne(x => x.RatingUser)
+                .WithMany(x => x.SentRates)
+                .HasForeignKey(x => x.RatingUserId)
+                .OnDelete(DeleteBehavior.NoAction);
+        });
     }
 
-    public DbSet<User> Users { get; set; }
-    public DbSet<Rate> Rates { get; set; }
+    public DbSet<User> Users { get; set; } = default!;
+    public DbSet<Rate> Rates { get; set; } = default!;
 }

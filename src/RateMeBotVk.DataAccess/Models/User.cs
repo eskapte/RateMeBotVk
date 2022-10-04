@@ -17,7 +17,13 @@ public class User
     [Range(1, 5)]
     public float Rating { get; set; }
     public int RatesCount { get; set; }
-    public List<Rate> Rates { get; set; }
 
+    public ICollection<Rate> GotRates { get; set; }
+    public ICollection<Rate> SentRates { get; set; }
 
+    public User()
+    {
+        GotRates = new List<Rate>();
+        SentRates = new List<Rate>();
+    }
 }
