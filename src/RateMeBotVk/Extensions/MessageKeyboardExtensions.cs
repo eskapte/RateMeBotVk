@@ -9,4 +9,10 @@ public static class MessageKeyboardExtensions
         keyboard.Inline = true;
         return keyboard;
     }
+
+    public static MessageKeyboard AsOneTime(this MessageKeyboard keyboard)
+    {
+        keyboard.OneTime = true;
+        return keyboard;
+    }
 }

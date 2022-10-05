@@ -9,7 +9,7 @@ public class User
     public long Id { get; set; }
 
     [StringLength(32, MinimumLength = 5)]
-    public string Username { get; set; }
+    public string Username { get; set; } = default!;
 
     public DateTime Created { get; set; }
     public DateTime Updated { get; set; }

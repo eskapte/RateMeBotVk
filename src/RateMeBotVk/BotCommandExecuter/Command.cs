@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace RateMeBotVk.BotCommandExecuter;
 
@@ -10,8 +11,12 @@ public class Command
     [JsonConverter(typeof(StringEnumConverter))]
     public CommandType CommandType { get; set; }
 
-    public Command(CommandType type)
+    [Range(1, 5)]
+    public short? RateValue { get; set; }
+
+    public Command(CommandType type, short? rateValue = null)
     {
         CommandType = type;
+        RateValue = rateValue;
     }
 }

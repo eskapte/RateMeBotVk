@@ -28,6 +28,25 @@ public static class ResponseHelper
         Keyboard = KeyboardHelper.GetMain()
     };
 
+    public static MessagesSendParams SetRateValue(bool isValid = true)
+    {
+        var message = $"{(isValid ? "" : "Некорректное значение\n")}" +
+                      $"Как бы вы оценили этого пользователя от 1 до 5?";
+
+        return new()
+        {
+            Message = message,
+            Keyboard = KeyboardHelper.GetRateValuesKeyboard().AsInline()
+        };
+    }
+
+    public static MessagesSendParams SetRateText(short rateValue) => new()
+    {
+        Message = "Вы можете обосновать свою оценку комментарием до 300 символов\n" +
+                  "Это не обязательно",
+        Keyboard = KeyboardHelper.GetContinueKeyboard(rateValue).AsOneTime()
+    };
+
     public static MessagesSendParams Settings(bool isSubcribed) => new()
     {
         Message =   "Описание команд:\n" +
@@ -79,6 +98,12 @@ public static class ResponseHelper
     public static MessagesSendParams Back => new()
     {
         Message = "Возвращаемся",
+        Keyboard = KeyboardHelper.GetMain()
+    };
+
+    public static MessagesSendParams Success => new()
+    {
+        Message = "Спасибо за ваш отзыв!",
         Keyboard = KeyboardHelper.GetMain()
     };
 }

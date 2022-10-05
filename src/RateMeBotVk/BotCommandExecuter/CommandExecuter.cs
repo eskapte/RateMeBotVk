@@ -1,14 +1,15 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using RateMeBotVk.Extensions;
 using RateMeBotVk.Helpers;
 using RateMeBotVk.Models.Users;
 using RateMeBotVk.Services;
 using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using VkNet.Model;
-using VkNet.Model.RequestParams;
 
 namespace RateMeBotVk.BotCommandExecuter;
 
@@ -22,11 +23,16 @@ public class CommandExecuter : ICommandExecuter
 {
     private readonly IVkMessageService _vkMessageService;
     private readonly IVkSearchInfoService _vkSearchInfoService;
+    private readonly ILogger<CommandExecuter> _logger;
 
-    public CommandExecuter(IVkMessageService vkMessageService, IVkSearchInfoService vkSearchInfoService)
+    public CommandExecuter(
+        IVkMessageService vkMessageService, 
+        IVkSearchInfoService vkSearchInfoService, 
+        ILogger<CommandExecuter> logger)
     {
         _vkMessageService = vkMessageService;
         _vkSearchInfoService = vkSearchInfoService;
+        _logger = logger;
     }
 
     public async Task ExecuteAsync(Message message, CancellationToken token = default)
@@ -48,6 +54,9 @@ public class CommandExecuter : ICommandExecuter
             case CommandType.Search:
                 await ProcessSearchCommand(message, token);
                 break;
+            case CommandType.Rate:
+                await ProcessRateCommandAsync(message, token);
+                break;
             case CommandType.Settings:
                 await ProcessSettingsCommandAsync(message, token);
                 break;
@@ -62,22 +71,38 @@ public class CommandExecuter : ICommandExecuter
 
     #region CommandsProcessors
 
-    private async Task ProcessSearchCommand(Message message, CancellationToken token)
+    private async Task ProcessSearchCommand(Message message, CancellationToken token = default)
     {
         var username = GetUsernameFromUrl(message.Text);
         var userData = await _vkSearchInfoService.SearchUserByUsernameAsync(username, token);
 
         var response = userData switch
         {
-            UserWithoutRating user => ResponseHelper.UserWithoutRating(user.FullName, user.Username)
+            UserWithoutRating user => ResponseHelper
+                .UserWithoutRating(user.FullName, user.Username)
                 .ToPeer(message.PeerId.Value),
-            UserWithRating user => ResponseHelper.UserProfile(user.FullName, user.Username, user.Rating, user.RatesCount)
+
+            UserWithRating user => ResponseHelper
+                .UserProfile(user.FullName, user.Username, user.Rating, user.RatesCount)
                 .ToPeer(message.PeerId.Value),
+
             NotFoundUser _ => ResponseHelper.NotFoundUser,
-            _ => throw new NotImplementedException("Undefines User type")
+
+            _ => throw new NotImplementedException("Undefined User type")
         };
 
         await _vkMessageService.SendMessageAsync(response, token: token);
+    }
+
+    private async Task ProcessRateCommandAsync(Message message, CancellationToken token = default)
+    {
+        var response = ResponseHelper.SetRateValue().ToPeer(message.PeerId.Value);
+
+        await _vkMessageService.SendMessageAsync(response, token: token);
+    }
+
+    private async Task ProcessRateValueCommandAsync(Message message, bool isContinue, CancellationToken token = default)
+    {
     }
 
     private async Task ProcessSettingsCommandAsync(Message message, CancellationToken token = default)

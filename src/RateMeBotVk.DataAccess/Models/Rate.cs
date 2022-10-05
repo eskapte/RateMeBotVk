@@ -9,6 +9,9 @@ public class Rate
     [Range(1, 5)]
     public float RateValue { get; set; }
 
+    [StringLength(300)]
+    public string? FeedbackText { get; set; }
+
     public long RatedUserId { get; set; }
     public User? RatedUser { get; set; }
 

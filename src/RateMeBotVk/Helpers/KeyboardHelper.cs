@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
 using RateMeBotVk.BotCommandExecuter;
+using System.Dynamic;
+using System.Linq;
 using VkNet.Enums.SafetyEnums;
 using VkNet.Model.Keyboard;
 
@@ -8,6 +10,8 @@ public static class KeyboardHelper
 {
     private static MessageKeyboard _mainKeyboard;
     private static MessageKeyboard _rateKeyboard;
+    private static MessageKeyboard _rateValuesKeyboard;
+    private static MessageKeyboard _continueKeyboard;
 
     public static MessageKeyboard GetMain()
     {
@@ -42,6 +46,30 @@ public static class KeyboardHelper
         return _rateKeyboard;
     }
 
+    public static MessageKeyboard GetRateValuesKeyboard()
+    {
+        if (_rateValuesKeyboard is not null)
+            return _rateValuesKeyboard;
+
+        var rate1 = CreateButtonOptions("1", new Command(CommandType.RateSetValue, 1));
+        var rate2 = CreateButtonOptions("2", new Command(CommandType.RateSetValue, 2));
+        var rate3 = CreateButtonOptions("3", new Command(CommandType.RateSetValue, 3));
+        var rate4 = CreateButtonOptions("4", new Command(CommandType.RateSetValue, 4));
+        var rate5 = CreateButtonOptions("5", new Command(CommandType.RateSetValue, 5));
+
+
+        _rateValuesKeyboard = new KeyboardBuilder()
+            .AddButton(rate1, KeyboardButtonColor.Negative)
+            .AddButton(rate2, KeyboardButtonColor.Default)
+            .AddButton(rate3, KeyboardButtonColor.Default)
+            .AddLine()
+            .AddButton(rate4, KeyboardButtonColor.Default)
+            .AddButton(rate5, KeyboardButtonColor.Positive)
+            .Build();
+
+        return _rateValuesKeyboard;
+    }
+
     public static MessageKeyboard GetSettings()
     {
         var unsubscribeBtn = CreateButtonOptions("Отписаться", new Command(CommandType.UnsubcribeOnUpdates));
@@ -54,6 +82,22 @@ public static class KeyboardHelper
             .Build();
 
         return settingKeyboard;
+    }
+
+    public static MessageKeyboard GetContinueKeyboard(short rateValue)
+    {
+        if (_continueKeyboard is not null)
+            return _continueKeyboard;
+
+        var backBtn = CreateButtonOptions("Назад", new Command(CommandType.Back, rateValue));
+        var continueBtn = CreateButtonOptions("Пропустить", new Command(CommandType.Continue, rateValue));
+
+        _continueKeyboard = new KeyboardBuilder()
+            .AddButton(backBtn, KeyboardButtonColor.Default)
+            .AddButton(continueBtn, KeyboardButtonColor.Primary)
+            .Build();
+
+        return _continueKeyboard;
     }
 
     private static MessageKeyboardButtonAction CreateButtonOptions(string text, Command command)

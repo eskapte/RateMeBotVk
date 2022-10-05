@@ -8,6 +8,7 @@ public class Db : DbContext
 {
     public Db(DbContextOptions<Db> options) : base(options)
     {
+        Database.EnsureDeleted();
         Database.EnsureCreated();
     }
 
