@@ -10,6 +10,7 @@ using System.Linq;
 using RateMeBotVk.Services;
 using Microsoft.Extensions.Options;
 using RateMeBotVk.BotCommandExecuter;
+using RateMeBotVk.Configuration;
 
 namespace RateMeBotVk;
 

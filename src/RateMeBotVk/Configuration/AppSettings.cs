@@ -1,4 +1,4 @@
-﻿namespace RateMeBotVk;
+﻿namespace RateMeBotVk.Configuration;
 
 public class AppSettings
 {

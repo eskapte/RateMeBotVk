@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RateMeBotVk.BotCommandExecuter;
+using RateMeBotVk.Configuration;
 using RateMeBotVk.DataAccess;
 using RateMeBotVk.Services;
 using System.Threading.Tasks;

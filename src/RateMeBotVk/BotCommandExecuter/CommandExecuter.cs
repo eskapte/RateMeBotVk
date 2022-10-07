@@ -101,10 +101,6 @@ public class CommandExecuter : ICommandExecuter
         await _vkMessageService.SendMessageAsync(response, token: token);
     }
 
-    private async Task ProcessRateValueCommandAsync(Message message, bool isContinue, CancellationToken token = default)
-    {
-    }
-
     private async Task ProcessSettingsCommandAsync(Message message, CancellationToken token = default)
     {
         var response = ResponseHelper.Settings(true).ToPeer(message.PeerId.Value);

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using RateMeBotVk.Configuration;
 using System.Threading;
 using System.Threading.Tasks;
 using VkNet.Abstractions;

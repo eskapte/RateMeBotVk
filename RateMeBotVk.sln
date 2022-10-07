@@ -5,7 +5,7 @@ VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RateMeBotVk", "src\RateMeBotVk\RateMeBotVk.csproj", "{69A0A0FE-E078-4794-B1E5-2C381F71671A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RateMeBotVk.DataAccess", "src\RateMeBotVk.DataAccess\RateMeBotVk.DataAccess.csproj", "{23C8A3D7-AB72-4DFC-82EB-51D153F8F1BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RateMeBotVk.DataAccess", "src\RateMeBotVk.DataAccess\RateMeBotVk.DataAccess.csproj", "{23C8A3D7-AB72-4DFC-82EB-51D153F8F1BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
