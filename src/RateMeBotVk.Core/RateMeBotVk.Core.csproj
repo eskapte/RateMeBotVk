@@ -30,10 +30,4 @@
     <ProjectReference Include="..\RateMeBotVk.DataAccess\RateMeBotVk.DataAccess.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Dockerfile">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
