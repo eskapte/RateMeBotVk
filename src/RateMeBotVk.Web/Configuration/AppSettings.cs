@@ -2,8 +2,8 @@
 
 public class AppSettings
 {
-    public uint LongPollVersion { get; set; }
+    public uint ApiVersion { get; set; }
     public ulong GroupId { get; set; }
     public int OnErrorDelay { get; set; }
-    public int ProcessChatsPerSecond { get; set; }
+    public string ConfirmString { get; set; } = string.Empty;
 }

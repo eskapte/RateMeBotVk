@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RateMeBotVk", "src\RateMeBotVk\RateMeBotVk.csproj", "{69A0A0FE-E078-4794-B1E5-2C381F71671A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RateMeBotVk.Core", "src\RateMeBotVk\RateMeBotVk.Core.csproj", "{69A0A0FE-E078-4794-B1E5-2C381F71671A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RateMeBotVk.DataAccess", "src\RateMeBotVk.DataAccess\RateMeBotVk.DataAccess.csproj", "{23C8A3D7-AB72-4DFC-82EB-51D153F8F1BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RateMeBotVk.Web", "src\RateMeBotVkWeb\RateMeBotVk.Web.csproj", "{4D088AFF-7465-47BA-BF12-08AC1CA29F20}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{23C8A3D7-AB72-4DFC-82EB-51D153F8F1BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23C8A3D7-AB72-4DFC-82EB-51D153F8F1BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23C8A3D7-AB72-4DFC-82EB-51D153F8F1BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D088AFF-7465-47BA-BF12-08AC1CA29F20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D088AFF-7465-47BA-BF12-08AC1CA29F20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D088AFF-7465-47BA-BF12-08AC1CA29F20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D088AFF-7465-47BA-BF12-08AC1CA29F20}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
