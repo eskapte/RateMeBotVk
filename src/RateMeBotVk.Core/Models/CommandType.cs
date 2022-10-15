@@ -1,9 +1,9 @@
-﻿namespace RateMeBotVk.BotCommandExecuter;
+﻿namespace RateMeBotVk.Core.Models;
 
 public enum CommandType : byte
 {
-    Search = 1,
-    Start,
+    Start = 1,
+    Search,
     Rate,
     RateSetValue,
     RatesWatch,

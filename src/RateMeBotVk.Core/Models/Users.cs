@@ -12,7 +12,7 @@ public abstract class AbstractUser
 
 public class UserWithRating : AbstractUser
 {
-    public string FullName { get; set; } 
+    public string FullName { get; set; } = string.Empty;
     public float Rating { get; set; }
     public int RatesCount { get; set; }
 
@@ -21,7 +21,7 @@ public class UserWithRating : AbstractUser
 
 public class UserWithoutRating : AbstractUser
 {
-    public string FullName { get; set; }
+    public string FullName { get; set; } = string.Empty;
 
     public UserWithoutRating(string username) : base(username) { }
 }
