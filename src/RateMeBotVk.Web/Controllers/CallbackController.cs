@@ -5,6 +5,7 @@ using RateMeBotVk.Core.BotCommandExecuters;
 using RateMeBotVk.Web.Models.Common;
 using System.Threading.Tasks;
 using VkNet.Model;
+using VkNet.Model.GroupUpdate;
 using VkNet.Utils;
 
 namespace RateMeBotVkWeb.Controllers;
@@ -15,11 +16,16 @@ public class CallbackController : ControllerBase
 {
     private readonly AppSettings _settings;
     private readonly IMessageCommandExecuter _messageCommandExecuter;
+    private readonly ICallbackCommandExecuter _callbackCommandExecuter;
 
-    public CallbackController(IOptions<AppSettings> settings, IMessageCommandExecuter messageCommandExecuter)
+    public CallbackController(
+        IOptions<AppSettings> settings, 
+        IMessageCommandExecuter messageCommandExecuter, 
+        ICallbackCommandExecuter callbackCommandExecuter)
     {
         _settings = settings.Value;
         _messageCommandExecuter = messageCommandExecuter;
+        _callbackCommandExecuter = callbackCommandExecuter;
     }
 
     [HttpPost]
@@ -28,6 +34,10 @@ public class CallbackController : ControllerBase
         switch (request.Type) {
             case RequestType.Confirmation:
                 return IsConfirm(request) ? Ok(_settings.ConfirmString) : BadRequest();
+            case RequestType.Callback:
+                var msgEvent = MessageEvent.FromJson(new VkResponse(request.Object));
+                await _callbackCommandExecuter.ExecuteAsync(msgEvent);
+                return Ok();
             case RequestType.NewMessage:
                 var message = Message.FromJson(new VkResponse(request.Object));
                 await _messageCommandExecuter.ExecuteAsync(message);

@@ -1,16 +1,16 @@
-﻿using System;
+﻿using RateMeBotVk.DataAccess.Infrastructure;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace RateMeBotVk.DataAccess.Models;
-public class Rate
+public class Rate : Updatable
 {
+    [Key]
     public long Id { get; set; }
-
-    [Range(1, 5)]
-    public float RateValue { get; set; }
+    public bool IsLike { get; set; }
 
     [StringLength(300)]
-    public string? FeedbackText { get; set; }
+    public string? Comment { get; set; }
 
     public long RatedUserId { get; set; }
     public User? RatedUser { get; set; }
@@ -18,5 +18,6 @@ public class Rate
     public long RatingUserId { get; set; }
     public User? RatingUser { get; set; }
 
-    public DateTime Date { get; set; }
+    public DateTime Created { get; set; }
+    public override DateTime Updated { get; set; }
 }

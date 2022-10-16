@@ -4,13 +4,8 @@ public enum CommandType : byte
 {
     Start = 1,
     Search,
+    UserProfile,
     Rate,
-    RateSetValue,
-    RatesWatch,
-    Settings,
-    AboutMe,
-    Back,
-    Continue,
-    SubcribeOnUpdates,
-    UnsubcribeOnUpdates,
+    ShowComments,
+    WriteComment
 }

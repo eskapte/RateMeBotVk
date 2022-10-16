@@ -1,5 +1,8 @@
-﻿using RateMeBotVk.Extensions;
+﻿using RateMeBotVk.Core.Models;
+using RateMeBotVk.Extensions;
 using System;
+using System.Collections.Generic;
+using VkNet.Model.Attachments;
 using VkNet.Model.RequestParams;
 
 namespace RateMeBotVk.Helpers;
@@ -8,54 +11,27 @@ public static class ResponseHelper
 {
     public static MessagesSendParams Start => new()
     {
-        Message =  "Добро пожаловать!\n" +
-                   "Этот бот позволяет ставить оценки пользователям Вконтакте\n\n" +
-                   "Из оценок будет формироваться рейтинг, по которому можно будет примерно понять, " +
-                   "хороший ли это человек или нет\n\n" + 
-                   "Чтобы поставить человеку оценку или посмотреть его рейтинг, просто отправьте username " +
-                   "или ссылку на вк страничку этого человека",
+        Message =  "Чтобы воспользоваться ботом напишите и отправьте id пользователя или ссылку на его страницу\n" +
+                   "К примеру: @username, username, https://vk.com/username, id229294556, 229294556",
         Keyboard = KeyboardHelper.GetMain(),
         RandomId = GetRandomId()
     };
 
-    public static MessagesSendParams Subscribe() => new()
-    {
-        Message =  $"Подпишитесь на нашу [https://vk.com/rate_me_bot|группу]. " +
-                    "В ней мы выкладываем " +
-                    "все свежие новости о боте, а также в обсуждениях Вы сможете написать " +
-                    "о пожеланиях и рекомендациях",
-        Keyboard = KeyboardHelper.GetMain(),
-        RandomId = GetRandomId()
-    };
-
-    public static MessagesSendParams AboutMe(float rating = 0f, int ratesCount = 0) => new()
+    public static MessagesSendParams UserProfile(UserProfile user) => new()
     {
         Message =   $"Информация о Вашем профиле\n" +
-                    $"Рейтинг: {rating}\n" +
-                    $"Кол-во отзывов: {ratesCount}",
-        Keyboard = KeyboardHelper.GetMain(),
+                    $"Положительных: {user.Likes} 👍🏻\n" +
+                    $"Отрицательных: {user.Dislikes} 👎🏻\n" +
+                    $"Всего оценок: {user.RatesCount}",
+        Keyboard = KeyboardHelper.GetCurrentProfileActionsKeyboard(user).AsInline(),
         RandomId = GetRandomId()
     };
 
-    public static MessagesSendParams UserProfile(
-        string fullName, 
-        string username, 
-        float rating = 0f, 
-        int ratesCount = 0) => new()
-        {
-        Message =   $"Информация о профиле [{username}|{fullName}]\n" +
-                    $"Рейтинг: {rating}\n" +
-                    $"Кол-во отзывов: {ratesCount}",
-        Keyboard = KeyboardHelper.GetRateKeyboard().AsInline(),
-        RandomId = GetRandomId()
-        };
-
-    public static MessagesSendParams UserWithoutRating(string fullName, string username) => new()
+    public static MessagesSendParams FoundUserProfile(UserProfile user) => new()
     {
-        Message = $"Информация о профиле [{username}|{fullName}]\n" +
-                  $"Об этом пользователе ещё нет отзывов\n" + 
-                  $"Будьте первыми - оставьте отзыв!",
-        Keyboard = KeyboardHelper.GetRateKeyboard().AsInline(),
+        Message =   $"Профиль [{user.Username}|{user.FullName}]\n" +
+                    $"Всего оценок: {user.RatesCount}",
+        Keyboard = KeyboardHelper.GetProfileActionsKeyboard(user).AsInline(),
         RandomId = GetRandomId()
     };
 

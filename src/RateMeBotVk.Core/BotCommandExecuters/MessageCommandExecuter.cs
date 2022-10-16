@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RateMeBotVk.Core.Models;
 using RateMeBotVk.Helpers;
-using RateMeBotVk.Models.Users;
 using RateMeBotVk.Services;
 using System;
 using System.Text.RegularExpressions;
@@ -33,12 +32,14 @@ public class MessageCommandExecuter : IMessageCommandExecuter
     {
         token.ThrowIfCancellationRequested();
 
-        var command = JsonConvert.DeserializeObject<Payload?>(message.Payload ?? "")?.Command ?? CommandType.Search;
+        var payload = JsonConvert.DeserializeObject<Payload?>(message.Payload ?? "");
+        var command = payload?.Command ?? CommandType.Search;
 
         var response = command switch
         {
             CommandType.Start => ResponseHelper.Start,
-            CommandType.Search => await SearhUserAsync(message, token),
+            CommandType.Search => await SearchUserAsync(message, token),
+            CommandType.UserProfile => await SearchUserAsync(message, token),
             _ => ResponseHelper.CommandNotFount
         };
         response.PeerId = message.PeerId;
@@ -48,20 +49,18 @@ public class MessageCommandExecuter : IMessageCommandExecuter
 
     #region Bot Commands
 
-    private async Task<MessagesSendParams> SearhUserAsync(Message message, CancellationToken token = default)
+    private async Task<MessagesSendParams> SearchUserAsync(Message message, CancellationToken token = default)
     {
-        var username = ParseUsernameIfUrl(message.Text);
+        var username = message.Text.StartsWith('@') 
+            ? message.Text[1..]
+            : ParseUsernameIfUrl(message.Text);
         var result = await _vkSearchInfoService.SearchUserByUsernameAsync(username, token);
 
         return result switch
         {
-            UserWithoutRating user => ResponseHelper.UserWithoutRating(user.FullName, user.Username),
-
-            UserWithRating user => ResponseHelper
-                .UserProfile(user.FullName, user.Username, user.Rating, user.RatesCount),
-
+            UserProfile user when user.UserId == message.PeerId => ResponseHelper.UserProfile(user),
+            UserProfile user => ResponseHelper.FoundUserProfile(user),
             NotFoundUser _ => ResponseHelper.NotFoundUser,
-
             _ => throw new NotImplementedException("Undefined User type")
         };
     }

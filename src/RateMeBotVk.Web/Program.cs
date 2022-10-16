@@ -1,8 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Rewrite;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RateMeBotVk.Configuration;
 using RateMeBotVk.Core.BotCommandExecuters;
+using RateMeBotVk.Core.Services;
+using RateMeBotVk.DataAccess;
 using RateMeBotVk.Services;
 using VkNet;
 using VkNet.Abstractions;
@@ -27,14 +31,17 @@ builder.Services.AddSingleton<IVkApi>(x =>
     return vk;
 });
 builder.Services.AddScoped<IMessageCommandExecuter, MessageCommandExecuter>();
+builder.Services.AddScoped<ICallbackCommandExecuter, CallbackCommandExecuter>();
 builder.Services.AddScoped<IVkSearchInfoService, VkSearchInfoService>();
+builder.Services.AddScoped<IUserInteractionService, UserInteractionService>();
+
+builder.Services.AddDbContext<Db>(options =>
+{
+    options.UseSqlServer(config.GetConnectionString("VkBotDatabase"), config => config.CommandTimeout(60));
+});
 
 var app = builder.Build();
 
-//var rwOptions = new RewriteOptions().AddRewrite("/", "callback", false);
-//app.UseRewriter(rwOptions);
-
-app.Map("/", () => "Its work");
 app.UseHttpsRedirection();
 app.MapControllers();
 
